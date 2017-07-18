@@ -16,7 +16,7 @@ namespace KafkaNet.Protocol
             {
                 gzip.Write(bytes, 0, bytes.Length);
                 gzip.Flush();
-                gzip.Close();
+                // gzip.Close();
                 return destination.ToArray();
             }
         }
@@ -29,7 +29,7 @@ namespace KafkaNet.Protocol
             {
                 gzip.CopyTo(destination);
                 gzip.Flush();
-                gzip.Close();
+                // gzip.Close();
                 return destination.ToArray();
             }
         }
@@ -162,32 +162,32 @@ namespace KafkaNet.Protocol
     }
 
     #region Exceptions...
-    public class FailCrcCheckException : ApplicationException
+    public class FailCrcCheckException : Exception
     {
         public FailCrcCheckException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class ResponseTimeoutException : ApplicationException
+    public class ResponseTimeoutException : Exception
     {
         public ResponseTimeoutException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class InvalidPartitionException : ApplicationException
+    public class InvalidPartitionException : Exception
     {
         public InvalidPartitionException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class ServerDisconnectedException : ApplicationException
+    public class ServerDisconnectedException : Exception
     {
         public ServerDisconnectedException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class ServerUnreachableException : ApplicationException
+    public class ServerUnreachableException : Exception
     {
         public ServerUnreachableException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class InvalidTopicMetadataException : ApplicationException
+    public class InvalidTopicMetadataException : Exception
     {
         public InvalidTopicMetadataException(ErrorResponseCode code, string message, params object[] args)
             : base(string.Format(message, args))
@@ -197,29 +197,29 @@ namespace KafkaNet.Protocol
         public ErrorResponseCode ErrorResponseCode { get; private set; }
     }
 
-    public class LeaderNotFoundException : ApplicationException
+    public class LeaderNotFoundException : Exception
     {
         public LeaderNotFoundException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class UnresolvedHostnameException : ApplicationException
+    public class UnresolvedHostnameException : Exception
     {
         public UnresolvedHostnameException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class InvalidMetadataException : ApplicationException
+    public class InvalidMetadataException : Exception
     {
         public int ErrorCode { get; set; }
         public InvalidMetadataException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class OffsetOutOfRangeException : ApplicationException
+    public class OffsetOutOfRangeException : Exception
     {
         public Fetch FetchRequest { get; set; }
         public OffsetOutOfRangeException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
 
-    public class BufferUnderRunException : ApplicationException
+    public class BufferUnderRunException : Exception
     {
         public int MessageHeaderSize { get; set; }
         public int RequiredBufferSize { get; set; }
@@ -232,10 +232,10 @@ namespace KafkaNet.Protocol
         }
     }
 
-    public class KafkaApplicationException : ApplicationException
+    public class KafkaException : Exception
     {
         public int ErrorCode { get; set; }
-        public KafkaApplicationException(string message, params object[] args) : base(string.Format(message, args)) { }
+        public KafkaException(string message, params object[] args) : base(string.Format(message, args)) { }
     }
     #endregion
 

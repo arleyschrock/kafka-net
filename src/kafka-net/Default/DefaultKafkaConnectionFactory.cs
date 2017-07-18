@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -34,11 +35,11 @@ namespace KafkaNet
             try
             {
                 //lookup the IP address from the provided host name
-                var addresses = Dns.GetHostAddresses(hostname);
+                var addresses = Dns.GetHostAddressesAsync(hostname).Result;
 
                 if (addresses.Length > 0)
                 {
-                    Array.ForEach(addresses, address => log.DebugFormat("Found address {0} for {1}", address, hostname));
+                    addresses.ToList().ForEach(address => log.DebugFormat("Found address {0} for {1}", address, hostname));
 
                     var selectedAddress = addresses.FirstOrDefault(item => item.AddressFamily == AddressFamily.InterNetwork) ?? addresses.First();
 

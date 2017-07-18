@@ -1,6 +1,108 @@
 ﻿using System;
 using System.Timers;
+using KafkaNet.Common;
 
+namespace System.Timers
+{
+    internal delegate void ElapsedEventHandler(object sender, ElapsedEventArgs e);
+
+  
+    public sealed class Timer : IDisposable
+    {
+        public bool AutoReset { get; set; } = true;
+        public TimeSpan Interval { get; set; }
+
+        internal event ElapsedEventHandler Elapsed ;//{ get; set; }
+
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                if (value)
+                {
+                    if (!_enabled)
+                    {
+                        _timer.Change((int)Interval.TotalMilliseconds, (int)Interval.TotalMilliseconds);
+                    }
+                }
+                else
+                {
+                    if (_enabled)
+                    {
+                        _timer?.Change(-1, -1);
+                    }
+                }
+                _enabled = value;
+            }
+        }
+
+        private System.Threading.Timer _timer;
+        private bool _enabled = false;
+
+
+        public Timer(double interval = -1D)
+        {
+            Interval = TimeSpan.FromMilliseconds(interval);
+            _timer = new System.Threading.Timer(OnTimerCallback, this, Interval, Interval);
+            this.AutoReset = true;
+            this.Enabled = interval >= 0;
+        }
+
+        private void OnTimerCallback(object state)
+        {
+            Elapsed?.Invoke(this, new ElapsedEventArgs());
+        }
+
+        public void Start()
+        {
+            Enabled = true;
+        }
+        public void Stop()
+        {
+            Enabled = false;
+        }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                    _timer?.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        ~Timer() {
+          // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+          Dispose(false);
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            GC.SuppressFinalize(this);
+        }
+        #endregion
+    }
+}
 namespace KafkaNet.Common
 {
     public enum ScheduledTimerStatus
@@ -136,7 +238,7 @@ namespace KafkaNet.Common
                 _timer.Elapsed -= ReplicationStartupTimerElapsed;
                 _timer.Elapsed += ReplicationTimerElapsed;
 
-                _timer.Interval = ProcessIntervalAndEnsureItIsGreaterThan0(_interval.Value);
+                _timer.Interval = TimeSpan.FromMilliseconds(ProcessIntervalAndEnsureItIsGreaterThan0(_interval.Value));
 
                 _timer.Start();
             }
@@ -163,7 +265,7 @@ namespace KafkaNet.Common
         {
             _timerStart = start;
 
-            _timer.Interval = ProcessIntervalAndEnsureItIsGreaterThan0(start - DateTime.Now);
+            _timer.Interval = TimeSpan.FromMilliseconds(ProcessIntervalAndEnsureItIsGreaterThan0(start - DateTime.Now));
 
             return this;
         }
@@ -177,11 +279,8 @@ namespace KafkaNet.Common
             {
                 End();
             }
-
-            using (_timer)
-            {
-                _disposed = true;
-            }
+            _timer?.Dispose();
+            _disposed = true;
         }
 
         /// <summary>
@@ -196,7 +295,7 @@ namespace KafkaNet.Common
 
             if (!_timerStart.HasValue)
             {
-                _timer.Interval = ProcessIntervalAndEnsureItIsGreaterThan0(_interval.Value);
+                _timer.Interval = TimeSpan.FromMilliseconds(ProcessIntervalAndEnsureItIsGreaterThan0(_interval.Value));
             }
 
             return this;

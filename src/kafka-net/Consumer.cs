@@ -84,7 +84,7 @@ namespace KafkaNet
                 {
                     _options.Log.DebugFormat("Consumer: Refreshing partitions for topic: {0}", _options.Topic);
                     var topic = _options.Router.GetTopicMetadata(_options.Topic);
-                    if (topic.Count <= 0) throw new ApplicationException(string.Format("Unable to get metadata for topic:{0}.", _options.Topic));
+                    if (topic.Count <= 0) throw new Exception(string.Format("Unable to get metadata for topic:{0}.", _options.Topic));
                     _topic = topic.First();
 
                     //create one thread per partition, if they are in the white list.
@@ -223,7 +223,7 @@ namespace KafkaNet
                 case ErrorResponseCode.NotLeaderForPartition:
                     throw new InvalidMetadataException("FetchResponse indicated we may have mismatched metadata.  ErrorCode:{0}", response.Error) { ErrorCode = response.Error };
                 default:
-                    throw new KafkaApplicationException("FetchResponse returned error condition.  ErrorCode:{0}", response.Error) { ErrorCode = response.Error };
+                    throw new KafkaException("FetchResponse returned error condition.  ErrorCode:{0}", response.Error) { ErrorCode = response.Error };
             }
         }
 

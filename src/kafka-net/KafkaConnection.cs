@@ -218,7 +218,7 @@ namespace KafkaNet
         {
             if (requestItem == null) return;
             if (_requestIndex.TryAdd(requestItem.CorrelationId, requestItem) == false)
-                throw new ApplicationException("Failed to register request for async response.");
+                throw new Exception("Failed to register request for async response.");
         }
 
         private void TriggerMessageTimeout(AsyncRequestItem asyncRequestItem)

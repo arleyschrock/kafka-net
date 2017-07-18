@@ -61,7 +61,6 @@ namespace KafkaNet.Common
 			if (disposing)
 			{
 				using (_semaphore) { }
-				using (_releaser) { }
 			}
 		}
 

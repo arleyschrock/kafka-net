@@ -232,7 +232,7 @@ namespace KafkaNet.Common
             if (task.Exception != null)
                 return task.Exception.Flatten();
             
-            return new ApplicationException("Unknown exception occured.");
+            return new Exception("Unknown exception occured.");
         }
     }
 }

@@ -295,7 +295,7 @@ namespace KafkaNet
                         foreach (var topicMessageBatch in ackLevelBatch)
                         {
                             topicMessageBatch.Tcs.TrySetException(
-                                new KafkaApplicationException(
+                                new KafkaException(
                                     "An exception occured while executing a send operation against {0}.  Exception:{1}",
                                     failedTask.Route, failedTask.Task.Exception));
                         }

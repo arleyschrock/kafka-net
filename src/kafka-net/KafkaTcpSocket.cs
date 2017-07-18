@@ -363,7 +363,6 @@ namespace KafkaNet
             using (_disposeToken)
             using (_disposeRegistration)
             using (_client)
-            using (_socketTask)
             {
                 _socketTask.SafeWait(TimeSpan.FromSeconds(30));
             }
